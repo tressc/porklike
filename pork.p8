@@ -109,7 +109,7 @@ function moveplayer(dx,dy)
  if fget(tle,0) then
   --wall
   p_sox,p_soy=dx*8,dy*8
-  p_ox,p_oy=p_sox,p_soy
+  p_ox,p_oy=0,0
   p_t=0
   _upd=update_pturn
   p_mov=mov_bump
