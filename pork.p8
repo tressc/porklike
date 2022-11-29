@@ -37,14 +37,21 @@ function startgame()
  p_t=0
  
  wind={}
- addwind(32,64,64,24,{"hello world","this is line 2"})
+ talkwind=nil
 end
 -->8
 --updates
 function update_game()
- dobuttbuff()
- dobutt(buttbuff)
- buttbuff=-1
+ if talkwind!=nil then
+  if getbutt()==❎ then
+   talkwind.dur=0
+   talkwind=nil
+  end
+ else
+  dobuttbuff()
+  dobutt(buttbuff)
+  buttbuff=-1
+ end
 end
 
 function update_pturn()
@@ -124,6 +131,13 @@ end
 function rectfill2(_x,_y,_w,_h,_c)
  rectfill(_x,_y,_x+_w-1,_y+_h-1,_c)
 end
+
+function oprint8(_t,_x,_y,_c,_c2)
+ for i=1,4 do
+  print(_t,_x+dirx[i],_y+diry[i],_c2)
+ end
+ print(_t,_x,_y,_c)
+end
 -->8
 --gameplay
 
@@ -175,6 +189,8 @@ function trig_bump(tle,destx,desty)
   --door
   sfx(62)
   mset(destx,desty,1)
+ elseif tle==6 then
+  showmsg({"welcome to porklike","","climb the tower","to obtain the","golden kielbasa"})
  end
 end
 -->8
@@ -193,12 +209,12 @@ function addwind(_x,_y,_w,_h,_txt)
 end
 
 function drawind()
-	for w in all(wind) do
-	 local wx,wy,ww,wh=w.x,w.y,w.w,w.h
-	 rectfill2(wx,wy,ww,wh,0)
-	 rectfill2(wx+1,wy+1,ww-2,wh-2,6)
-	 rectfill2(wx+2,wy+2,ww-4,wh-4,0)
-  
+ for w in all(wind) do
+  local wx,wy,ww,wh=w.x,w.y,w.w,w.h
+  rectfill2(wx,wy,ww,wh,0)
+  rectfill2(wx+1,wy+1,ww-2,wh-2,6)
+  rectfill2(wx+2,wy+2,ww-4,wh-4,0)
+
   wx+=4
   wy+=4
   clip(wx,wy,ww-8,wh-8)
@@ -206,8 +222,30 @@ function drawind()
    local txt=w.txt[i]
    print(txt,wx,wy,6)
    wy+=6
-  end	
-	end
+  end
+  clip()
+  
+  if w.dur!=nil then
+   w.dur-=1
+   if w.dur<=0 then
+    local dif=w.h/4
+    w.y+=dif/2
+    w.h-=dif
+    if w.h<3 then
+     del(wind,w)
+    end
+   end
+  else
+   if w.butt then
+    oprint8("❎",wx+ww-15,wy-1+sin(time()*2),6,0)
+   end
+  end
+ end
+end
+
+function showmsg(txt)
+ talkwind=addwind(16,50,94,#txt*6+7,txt)
+ talkwind.butt=true
 end
 __gfx__
 000000000000000060666060000000000000000000000000aaaaaaaa00aaa00000aaa00000000000000000000000000000aaa000a0aaa0a0a000000055555550
